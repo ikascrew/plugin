@@ -19,12 +19,16 @@ type File struct {
 
 func New(file ...string) (*File, error) {
 
+	if file == nil || len(file) == 0 {
+		return nil, fmt.Errorf("New File argument error")
+	}
+
 	f := File{
-		name: file,
+		name: file[0],
 	}
 	var err error
 
-	f.cap, err = gocv.VideoCaptureFile(file)
+	f.cap, err = gocv.VideoCaptureFile(file[0])
 	if err != nil {
 		return nil, err
 	}
