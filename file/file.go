@@ -17,18 +17,18 @@ type File struct {
 	cap *gocv.VideoCapture
 }
 
-func New(file ...string) (*File, error) {
+func New(args ...string) (*File, error) {
 
-	if file == nil || len(file) == 0 {
+	if args == nil || len(args) == 0 {
 		return nil, fmt.Errorf("New File argument error")
 	}
 
 	f := File{
-		name: file[0],
+		name: args[0],
 	}
 	var err error
 
-	f.cap, err = gocv.VideoCaptureFile(file[0])
+	f.cap, err = gocv.VideoCaptureFile(args[0])
 	if err != nil {
 		return nil, err
 	}
