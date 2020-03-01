@@ -38,7 +38,8 @@ func New(args ...string) (*File, error) {
 	}
 
 	f.frames = int(f.cap.Get(gocv.VideoCaptureFrameCount))
-	v := gocv.NewMatWithSize(ikascrew.Config.Height, ikascrew.Config.Width, gocv.MatTypeCV8UC3)
+	//v := gocv.NewMatWithSize(ikascrew.Config.Height, ikascrew.Config.Width, gocv.MatTypeCV8UC3)
+	v := gocv.NewMat()
 
 	f.source = &v
 	return &f, nil
