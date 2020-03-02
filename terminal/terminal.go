@@ -13,12 +13,7 @@ import (
 func init() {
 }
 
-//var Target = time.Date(2019, time.December, 31, 9, 2, 0, 0, loc)
 type Terminal struct {
-	frames int
-	name   string
-	source *gocv.Mat
-
 	lines []string
 
 	now int
@@ -27,15 +22,8 @@ type Terminal struct {
 
 func New(params ...string) (*Terminal, error) {
 
-	f := Terminal{
-		name: file,
-	}
+	f := Terminal{}
 	var err error
-
-	source := gocv.NewMatWithSize(ikascrew.Config.Height, ikascrew.Config.Width, gocv.MatTypeCV8UC3)
-	f.source = &source
-
-	f.frames = 200
 
 	cs, err := cpu.Info()
 	cpuLine := make([]string, 0)
@@ -44,7 +32,6 @@ func New(params ...string) (*Terminal, error) {
 		cpuLine = append(cpuLine, fmt.Sprintf("    CPU -> %s x %d x %d", c.ModelName, c.Cores, len(cs)))
 	} else {
 		cpuLine = append(cpuLine, fmt.Sprintf("    CPU Error :%s ", err.Error()))
-
 	}
 
 	memLine := make([]string, 0)
@@ -57,9 +44,10 @@ func New(params ...string) (*Terminal, error) {
 	}
 
 	dispLine := make([]string, 0)
-	dispLine = append(dispLine, fmt.Sprintf("    DISPLAY:%d x %d", ikascrew.Config.Width, ikascrew.Config.Height))
+	dispLine = append(dispLine, fmt.Sprintf("    DISPLAY:%d x %d", 1280, 720))
 
 	f.lines = make([]string, 8+len(cpuLine)+len(memLine)+len(dispLine))
+
 	//CPU
 	//MEM
 	f.lines[0] = "I am ikascrew."
@@ -108,10 +96,7 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 	//終了文字数
 	n := v.now / fps
 
-	v.source.Close()
-
-	newV := gocv.NewMatWithSize(ikascrew.Config.Height, ikascrew.Config.Width, gocv.MatTypeCV8UC3)
-	v.source = &newV
+	newV := gocv.NewMatWithSize(720, 1280, gocv.MatTypeCV8UC3)
 
 	for idx, line := range v.lines {
 
@@ -125,7 +110,7 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 
 		n -= len(line)
 
-		gocv.PutText(v.source, buf, image.Pt(left, (idx+1)*height),
+		gocv.PutText(&newV, buf, image.Pt(left, (idx+1)*height),
 			gocv.FontHersheyComplexSmall, 1.0, color.RGBA{0, 255, 0, 0}, 2)
 
 		//calet
@@ -135,7 +120,11 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 	}
 
 	v.now++
-	return v.source, nil
+	return &newV, nil
+}
+
+func (v *Terminal) Wait() float64 {
+	return 33.3
 }
 
 func (v *Terminal) Set(f int) {
@@ -145,15 +134,11 @@ func (v *Terminal) Current() int {
 	return 1
 }
 
-func (v *Terminal) Size() int {
-	return v.frames
-}
-
 func (v *Terminal) Source() string {
-	return v.name
+	//TODO
+	return "文字列だね"
 }
 
 func (v *Terminal) Release() error {
-	v.source.Close()
 	return nil
 }

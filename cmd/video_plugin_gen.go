@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"fmt"
@@ -17,22 +17,22 @@ var NotFoundError = fmt.Errorf("NotFound Video Type")
 
 func Get(t string, params ...string) (core.Video, error) {
 
-	var v video.Video
+	var v core.Video
 	var err error
 
 	switch t {
 
 	case "cd":
-		v, err = cd.New(params)
+		v, err = cd.New(params...)
 
 	case "file":
-		v, err = file.New(params)
+		v, err = file.New(params...)
 
 	case "img":
-		v, err = img.New(params)
+		v, err = img.New(params...)
 
 	case "terminal":
-		v, err = terminal.New(params)
+		v, err = terminal.New(params...)
 
 	}
 

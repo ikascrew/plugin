@@ -10,6 +10,7 @@ func init() {
 }
 
 type File struct {
+	fps    float64
 	frames int
 	name   string
 	source *gocv.Mat
@@ -26,6 +27,7 @@ func New(args ...string) (*File, error) {
 	f := File{
 		name: args[0],
 	}
+
 	var err error
 
 	f.cap, err = gocv.VideoCaptureFile(args[0])
@@ -38,8 +40,9 @@ func New(args ...string) (*File, error) {
 	}
 
 	f.frames = int(f.cap.Get(gocv.VideoCaptureFrameCount))
-	//v := gocv.NewMatWithSize(ikascrew.Config.Height, ikascrew.Config.Width, gocv.MatTypeCV8UC3)
-	v := gocv.NewMat()
+	v := gocv.NewMatWithSize(720, 1280, gocv.MatTypeCV8UC3)
+
+	f.fps = f.cap.Get(gocv.VideoCaptureFPS)
 
 	f.source = &v
 	return &f, nil
@@ -51,19 +54,18 @@ func (v *File) Next() (*gocv.Mat, error) {
 		return nil, fmt.Errorf("Error:Caputure is nil")
 	}
 
-	//pos := int(v.cap.GetProperty(opencv.CV_CAP_PROP_POS_FRAMES))
-	pos := int(v.cap.Get(gocv.VideoCapturePosFrames))
-	if pos == v.Size() {
-		v.Set(1)
-	}
-
 	v.cap.Read(v.source)
-	if v.source.Empty() {
+
+	pos := int(v.cap.Get(gocv.VideoCapturePosFrames))
+	if pos == v.frames {
 		v.Set(1)
-		return nil, fmt.Errorf("Error:Image is nil")
 	}
 
 	return v.source, nil
+}
+
+func (v *File) Wait() float64 {
+	return v.fps
 }
 
 func (v *File) Set(f int) {
@@ -72,10 +74,6 @@ func (v *File) Set(f int) {
 
 func (v *File) Current() int {
 	return int(v.cap.Get(gocv.VideoCapturePosFrames))
-}
-
-func (v *File) Size() int {
-	return v.frames
 }
 
 func (v *File) Source() string {

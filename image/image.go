@@ -10,20 +10,19 @@ func init() {
 }
 
 type Image struct {
-	current int
-	name    string
-	src     *gocv.Mat
+	name string
+	src  *gocv.Mat
 }
 
-func New(f ...string) (*Image, error) {
+func New(params ...string) (*Image, error) {
+
 	img := Image{
-		name:    f,
-		current: 0,
+		name: params[0],
 	}
 
-	wk := gocv.IMRead(f, gocv.IMReadColor)
+	wk := gocv.IMRead(img.name, gocv.IMReadColor)
 	if wk.Empty() {
-		return nil, fmt.Errorf("Error:LoadImage[%s]", f)
+		return nil, fmt.Errorf("Error:LoadImage[%s]", params[0])
 	}
 
 	img.src = &wk
@@ -32,23 +31,18 @@ func New(f ...string) (*Image, error) {
 }
 
 func (v *Image) Next() (*gocv.Mat, error) {
-	v.current++
-	if v.current == v.Size() {
-		v.current = 0
-	}
 	return v.src, nil
 }
 
+func (v *Image) Wait() float64 {
+	return 33.3
+}
+
 func (v *Image) Set(f int) {
-	v.current = f
 }
 
 func (v *Image) Current() int {
-	return v.current
-}
-
-func (v *Image) Size() int {
-	return 100
+	return 1
 }
 
 func (v *Image) Source() string {
