@@ -1,9 +1,11 @@
 {
     "package" : "server" ,
-    "plugins" : {
+    "videos" : {
         "file"     : "github.com/ikascrew/plugin/file",
         "img"      : "github.com/ikascrew/plugin/image",
         "terminal" : "github.com/ikascrew/plugin/terminal",
         "cd"       : "github.com/ikascrew/plugin/countdown"
+    },
+    "effects" : {
     }
 }

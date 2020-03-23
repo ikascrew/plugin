@@ -65,7 +65,7 @@ func (v *File) Next() (*gocv.Mat, error) {
 }
 
 func (v *File) Wait() float64 {
-	return v.fps
+	return 1000.0 / v.fps
 }
 
 func (v *File) Set(f int) {
