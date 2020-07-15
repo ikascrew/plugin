@@ -1,12 +1,10 @@
 package terminal
 
 import (
-	"fmt"
 	"image"
 	"image/color"
+	"strings"
 
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/mem"
 	"gocv.io/x/gocv"
 )
 
@@ -15,6 +13,7 @@ func init() {
 
 type Terminal struct {
 	lines []string
+	old   *gocv.Mat
 
 	now int
 	max int
@@ -23,63 +22,13 @@ type Terminal struct {
 func New(params ...string) (*Terminal, error) {
 
 	f := Terminal{}
-	var err error
 
-	cs, err := cpu.Info()
-	cpuLine := make([]string, 0)
-	if err == nil {
-		c := cs[0]
-		cpuLine = append(cpuLine, fmt.Sprintf("    CPU -> %s x %d x %d", c.ModelName, c.Cores, len(cs)))
-	} else {
-		cpuLine = append(cpuLine, fmt.Sprintf("    CPU Error :%s ", err.Error()))
-	}
+	buf := params[0]
 
-	memLine := make([]string, 0)
-	m, err := mem.VirtualMemory()
-	if err == nil {
-		// structが返ってきます。
-		memLine = append(memLine, fmt.Sprintf("    Mem:Total: %v, Free:%v", m.Total, m.Free))
-	} else {
-		memLine = append(memLine, fmt.Sprintf("    Mem Error :%s ", err.Error()))
-	}
-
-	dispLine := make([]string, 0)
-	dispLine = append(dispLine, fmt.Sprintf("    DISPLAY:%d x %d", 1280, 720))
-
-	f.lines = make([]string, 8+len(cpuLine)+len(memLine)+len(dispLine))
-
-	//CPU
-	//MEM
-	f.lines[0] = "I am ikascrew."
-	f.lines[1] = "I am a program born to transform \"VJ System\"."
-	f.lines[2] = ""
-	f.lines[3] = "Today's system:"
-
-	idx := 4
-	for _, line := range cpuLine {
-		f.lines[idx] = line
-		idx++
-	}
-
-	for _, line := range memLine {
-		f.lines[idx] = line
-		idx++
-	}
-
-	for _, line := range dispLine {
-		f.lines[idx] = line
-		idx++
-	}
-
-	f.lines[idx] = ""
-
-	f.lines[idx+1] = "I am a ready."
-	f.lines[idx+2] = "When you're ready?"
-	f.lines[idx+3] = "Let's get started!"
+	f.lines = strings.Split(buf, "\n")
 
 	f.now = 0
 	f.max = 0
-
 	for _, line := range f.lines {
 		f.max += len(line)
 	}
@@ -119,6 +68,9 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 		}
 	}
 
+	v.old.Close()
+	v.old = &newV
+
 	v.now++
 	return &newV, nil
 }
@@ -140,5 +92,6 @@ func (v *Terminal) Source() string {
 }
 
 func (v *Terminal) Release() error {
+	v.old.Close()
 	return nil
 }
