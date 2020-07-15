@@ -68,7 +68,9 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 		}
 	}
 
-	v.old.Close()
+	if v.old != nil {
+		v.old.Close()
+	}
 	v.old = &newV
 
 	v.now++
