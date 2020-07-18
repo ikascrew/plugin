@@ -24,6 +24,7 @@ func New(args ...string) (*File, error) {
 		return nil, fmt.Errorf("New File argument error")
 	}
 
+	name := args[0]
 	f := File{
 		name: args[0],
 	}
@@ -36,7 +37,7 @@ func New(args ...string) (*File, error) {
 	}
 
 	if f.cap == nil {
-		return nil, fmt.Errorf("New Capture Error:[%s]", f)
+		return nil, fmt.Errorf("New Capture Error:[%s]", name)
 	}
 
 	f.frames = int(f.cap.Get(gocv.VideoCaptureFrameCount))

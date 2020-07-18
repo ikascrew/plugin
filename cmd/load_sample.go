@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"plugin"
 
 	"github.com/ikascrew/core"
+	"github.com/ikascrew/core/window"
 )
 
 func main() {
@@ -29,5 +29,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(v)
+	win, err := window.New("plugins test")
+	if err != nil {
+		panic(err)
+	}
+	err = win.Play(v)
+	if err != nil {
+		panic(err)
+	}
 }
