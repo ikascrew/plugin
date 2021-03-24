@@ -1,4 +1,4 @@
-package main
+package terminal_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/ikascrew/plugin/terminal"
 )
 
-func main() {
+func TestTerminal() {
 	v, err := terminal.New()
 	if err != nil {
 		panic(err)
