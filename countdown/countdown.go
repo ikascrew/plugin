@@ -13,7 +13,7 @@ func init() {
 }
 
 var loc, _ = time.LoadLocation("Asia/Tokyo")
-var Target = time.Date(2020, time.January, 1, 0, 0, 0, 0, loc)
+var Target = time.Date(2022, time.January, 1, 0, 0, 0, 0, loc)
 var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 
 type Countdown struct {
@@ -60,7 +60,7 @@ func (v *Countdown) Next() (*gocv.Mat, error) {
 	} else {
 		gocv.PutText(&mat, "Happy", image.Pt(180, 200),
 			gocv.FontHersheyComplexSmall, 9.0, color.RGBA{255, 255, 255, 0}, 4)
-		gocv.PutText(&mat, "New Riging!", image.Pt(10, 450),
+		gocv.PutText(&mat, "New Year!", image.Pt(10, 450),
 			gocv.FontHersheyComplexSmall, 7.4, color.RGBA{255, 255, 255, 0}, 4)
 	}
 
