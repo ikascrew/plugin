@@ -1,3 +1,6 @@
+﻿//go:build ignore
+// TODO: 設計スケッチ(未完成)。ビルド対象外
+
 package main
 
 import (
@@ -38,7 +41,7 @@ func main() {
 
 func generate(name string, out string) error {
 
-	//指定されたJsonファイルを読み込み
+	//謖・ｮ壹＆繧後◆Json繝輔ぃ繧､繝ｫ繧定ｪｭ縺ｿ霎ｼ縺ｿ
 	b, err := ioutil.ReadFile(name)
 	if err != nil {
 		return err
@@ -84,7 +87,7 @@ import (
 {{ end }}
 )
 
-var NotFoundError = fmt.Errorf("NotFound Video Type")
+var NotFoundError = fmt.Errorf("NotFound Type")
 
 func GetVideo(t string, params ...string) (core.Video, error) {
 
@@ -106,5 +109,40 @@ func GetVideo(t string, params ...string) (core.Video, error) {
 		return nil, err
 	}
 	return v, nil
+}
+
+func GetEffect(t string, params ...string) (core.Effect, error) {
+
+	var e core.Effect
+	var err error
+	switch t {
+{{ range $key,$val := .Effects }}
+	case "{{ $key }}":
+		v, err = {{$key}}.New(params...)
+{{ end }}
+	}
+
+	if v == nil {
+		err = NotFoundError
+	}
+
+    return e,nil
+}
+
+func GetTransition(t string, params ...string) (core.Transition, error) {
+	var t core.Transition
+	var err error
+	switch t {
+{{ range $key,$val := .Transitions }}
+	case "{{ $key }}":
+		v, err = {{$key}}.New(params...)
+{{ end }}
+	}
+
+	if v == nil {
+		err = NotFoundError
+	}
+
+    return t,nil
 }
 `

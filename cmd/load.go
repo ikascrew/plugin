@@ -1,3 +1,6 @@
+﻿//go:build ignore
+// TODO: 設計スケッチ(未完成)。ビルド対象外
+
 package main
 
 import (

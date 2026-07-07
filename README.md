@@ -18,3 +18,11 @@ https://github.com/hybridgroup/gocv/issues/615
 
 linuxでビルドした後にWindows上でビルドできるかを試す
 
+jsonを元にWindows用のDLLやPluginを作成して読み込めるようにする
+
+
+プラグインは現状Videoを取得することしかできてないが
+
+DB上での設定画面
+コマの取得
+

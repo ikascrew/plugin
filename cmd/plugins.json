@@ -1,11 +1,16 @@
 {
-    "package" : "server" ,
+    "version" : "v1.0.0" ,
     "videos" : {
-        "file"     : "github.com/ikascrew/plugin/file",
-        "img"      : "github.com/ikascrew/plugin/image",
-        "terminal" : "github.com/ikascrew/plugin/terminal",
-        "cd"       : "github.com/ikascrew/plugin/countdown"
+        "file"     : "github.com/ikascrew/plugin/video/file",
+        "img"      : "github.com/ikascrew/plugin/video/image",
+        "terminal" : "github.com/ikascrew/plugin/video/terminal",
+        "cd"       : "github.com/ikascrew/plugin/video/countdown"
     },
     "effects" : {
+        "wait"     : "github.com/ikascrew/plugin/effect/wait",
+        "light"     : "github.com/ikascrew/plugin/effect/light"
+    },
+    "transitions" : {
+        "switch"     : "github.com/ikascrew/plugin/transition/switch"
     }
 }

@@ -1,3 +1,6 @@
+﻿//go:build ignore
+// TODO: 設計スケッチ(未完成)。ビルド対象外
+
 package main
 
 import (
@@ -5,16 +8,20 @@ import (
 
 	"github.com/ikascrew/core"
 
-	cd "github.com/ikascrew/plugin/countdown"
+	cd "github.com/ikascrew/plugin/video/countdown"
 
-	file "github.com/ikascrew/plugin/file"
+	file "github.com/ikascrew/plugin/video/file"
 
-	img "github.com/ikascrew/plugin/image"
+	img "github.com/ikascrew/plugin/video/image"
 
-	terminal "github.com/ikascrew/plugin/terminal"
+	terminal "github.com/ikascrew/plugin/video/terminal"
 )
 
 var NotFoundError = fmt.Errorf("NotFound Video Type")
+
+func GetPluginNames() []string {
+	return []string{"cd", "file", "img", "terminal"}
+}
 
 func GetVideo(t string, params ...string) (core.Video, error) {
 
@@ -46,4 +53,10 @@ func GetVideo(t string, params ...string) (core.Video, error) {
 	}
 
 	return v, nil
+}
+
+func GetEffect(t string, params ...string) (core.Effect, error) {
+}
+
+func GetTransition(t string, params ...string) (core.Effect, error) {
 }

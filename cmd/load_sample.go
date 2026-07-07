@@ -1,3 +1,6 @@
+﻿//go:build ignore
+// TODO: 設計スケッチ(未完成)。ビルド対象外
+
 package main
 
 import (
@@ -33,6 +36,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	err = win.Play(v)
 	if err != nil {
 		panic(err)
