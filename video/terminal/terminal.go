@@ -1,6 +1,7 @@
 package terminal
 
 import (
+	"encoding/json"
 	"image"
 	"image/color"
 	"strings"
@@ -19,11 +20,29 @@ type Terminal struct {
 	max int
 }
 
-func New(params ...string) (*Terminal, error) {
+// Params は JSON param の形。解釈はこのプラグインだけが行う
+type Params struct {
+	Text string `json:"text"`
+}
+
+func parseParams(param string) Params {
+	p := Params{}
+	s := strings.TrimSpace(param)
+	if strings.HasPrefix(s, "{") {
+		if err := json.Unmarshal([]byte(s), &p); err == nil {
+			return p
+		}
+	}
+	// JSON でなければ旧来どおり表示テキストとして扱う
+	p.Text = param
+	return p
+}
+
+func New(param string) (*Terminal, error) {
 
 	f := Terminal{}
 
-	buf := params[0]
+	buf := parseParams(param).Text
 
 	f.lines = strings.Split(buf, "\n")
 

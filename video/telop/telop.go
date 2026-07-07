@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/ikascrew/core"
-	"github.com/ikascrew/plugin/image"
+	"github.com/ikascrew/plugin/video/image"
 
 	"github.com/sclevine/agouti"
 	"golang.org/x/xerrors"

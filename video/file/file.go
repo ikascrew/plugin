@@ -1,7 +1,9 @@
 package file
 
 import (
+	"encoding/json"
 	"fmt"
+	"strings"
 
 	"gocv.io/x/gocv"
 )
@@ -18,20 +20,39 @@ type File struct {
 	cap *gocv.VideoCapture
 }
 
-func New(args ...string) (*File, error) {
+// Params は JSON param の形。解釈はこのプラグインだけが行う
+type Params struct {
+	Path string `json:"path"`
+}
 
-	if args == nil || len(args) == 0 {
+func parseParams(param string) Params {
+	p := Params{}
+	s := strings.TrimSpace(param)
+	if strings.HasPrefix(s, "{") {
+		if err := json.Unmarshal([]byte(s), &p); err == nil {
+			return p
+		}
+	}
+	// JSON でなければ旧来どおりパス文字列として扱う
+	p.Path = s
+	return p
+}
+
+func New(param string) (*File, error) {
+
+	p := parseParams(param)
+	if p.Path == "" {
 		return nil, fmt.Errorf("New File argument error")
 	}
 
-	name := args[0]
+	name := p.Path
 	f := File{
-		name: args[0],
+		name: name,
 	}
 
 	var err error
 
-	f.cap, err = gocv.VideoCaptureFile(args[0])
+	f.cap, err = gocv.VideoCaptureFile(name)
 	if err != nil {
 		return nil, err
 	}

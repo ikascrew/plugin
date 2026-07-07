@@ -1,9 +1,11 @@
 package countdown
 
 import (
+	"encoding/json"
 	"fmt"
 	"image"
 	"image/color"
+	"strings"
 	"time"
 
 	"gocv.io/x/gocv"
@@ -21,15 +23,51 @@ type Countdown struct {
 	target int64
 }
 
-func New(params ...string) (*Countdown, error) {
+// Params は JSON param の形。解釈はこのプラグインだけが行う。
+// Target は RFC3339("2026-12-31T23:59:59+09:00")または
+// "2006-01-02 15:04:05"(JST 扱い)。Text はカウント終了後に表示する文字列
+type Params struct {
+	Target string `json:"target"`
+	Text   string `json:"text"`
+}
+
+func parseParams(param string) Params {
+	p := Params{}
+	s := strings.TrimSpace(param)
+	if strings.HasPrefix(s, "{") {
+		if err := json.Unmarshal([]byte(s), &p); err == nil {
+			return p
+		}
+	}
+	// JSON でなければ旧来どおり終了後テキストとして扱う
+	p.Text = param
+	return p
+}
+
+func parseTarget(s string) (time.Time, error) {
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return t, nil
+	}
+	return time.ParseInLocation("2006-01-02 15:04:05", s, jst)
+}
+
+func New(param string) (*Countdown, error) {
+
+	p := parseParams(param)
 
 	f := Countdown{}
+	f.text = p.Text
 
-	//最終文字列
-	f.text = params[0]
-
-	//TODO ターゲットも設定
+	// target 未指定は旧来のハードコード値(過去日時 = 即終了表示)
 	f.target = Target.In(jst).Unix()
+	if p.Target != "" {
+		t, err := parseTarget(p.Target)
+		if err != nil {
+			return nil, fmt.Errorf("countdown target[%s]: %v", p.Target, err)
+		}
+		f.target = t.Unix()
+	}
+
 	return &f, nil
 }
 
@@ -57,6 +95,9 @@ func (v *Countdown) Next() (*gocv.Mat, error) {
 			gocv.Circle(&mat, image.Pt(502, 295), 200, color.RGBA{255, 255, 255, 0}, 8)
 		}
 
+	} else if v.text != "" {
+		gocv.PutText(&mat, v.text, image.Pt(60, 400),
+			gocv.FontHersheyComplexSmall, 7.4, color.RGBA{255, 255, 255, 0}, 4)
 	} else {
 		gocv.PutText(&mat, "Happy", image.Pt(180, 200),
 			gocv.FontHersheyComplexSmall, 9.0, color.RGBA{255, 255, 255, 0}, 4)

@@ -1,13 +1,13 @@
-package telop_test
+package file_test
 
 import (
 	"github.com/ikascrew/core/window"
-	"github.com/ikascrew/plugin/telop"
+	"github.com/ikascrew/plugin/video/file"
 )
 
 func ExampleNew() {
 
-	v, err := telop.New("logo.svg")
+	v, err := file.New(`{"path":"sample.mp4"}`)
 	if err != nil {
 		panic(err)
 	}
