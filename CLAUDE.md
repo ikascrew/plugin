@@ -54,7 +54,7 @@ param の中身を解釈するのはプラグインだけ、という原則を U
 1. `video/<name>/` に `New(param string) (core.Video, error)` を実装(`Params` 構造体 + `parseParams` は既存プラグインの形を踏襲)。`core.Video` インターフェースは `Next/Wait/Set/Current/Source/Release`。
 2. 同じパッケージに `Spec() []param.Field` を実装(`Field.Name` は `Params` の json タグと一致させる)。
 3. `video/video.go` の `Get` / `Spec` の switch と `Types()` に型名を追加(必要なら `Normalize` に別名、`IsGenerative` に生成型判定も)。
-3. これだけで ikasbox の `content register` と server の再生が両方使えるようになる(中間層の変更は不要 — それがこの設計の眼目)。
+4. これだけで ikasbox の `content register`・登録 UI のフォーム・server の再生がすべて使えるようになる(中間層の変更は不要 — それがこの設計の眼目)。
 
 ## WIP(ビルド対象外のスケッチ)
 
