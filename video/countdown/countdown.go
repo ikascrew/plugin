@@ -68,11 +68,32 @@ func parseParams(param string) Params {
 	return p
 }
 
+// localLayouts はタイムゾーンを持たない入力の受理形式。JST として解釈する。
+// "2006-01-02T15:04" は HTML の <input type="datetime-local"> が出す形で、
+// Spec() が target を param.DateTime と申告している以上これを受けること
+var localLayouts = []string{
+	"2006-01-02 15:04:05",
+	"2006-01-02 15:04",
+	"2006-01-02T15:04:05",
+	"2006-01-02T15:04",
+}
+
 func parseTarget(s string) (time.Time, error) {
+
+	s = strings.TrimSpace(s)
+
+	// タイムゾーン付き(RFC3339)はそのまま
 	if t, err := time.Parse(time.RFC3339, s); err == nil {
 		return t, nil
 	}
-	return time.ParseInLocation("2006-01-02 15:04:05", s, jst)
+
+	for _, l := range localLayouts {
+		if t, err := time.ParseInLocation(l, s, jst); err == nil {
+			return t, nil
+		}
+	}
+
+	return time.Time{}, fmt.Errorf("cannot parse as datetime: %q", s)
 }
 
 func New(param string) (*Countdown, error) {
