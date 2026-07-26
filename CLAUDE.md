@@ -32,10 +32,28 @@ ikascrew VJ システムの映像プラグイン集。コンテンツの「型�
 
 `video/telop` は agouti(ブラウザ自動化)依存の実験実装で、レジストリには**登録していない**(server/ikasbox に agouti を持ち込まないため)。
 
+## 入力フォーム定義(video/param)— 登録 UI 向けの自己申告
+
+param の中身を解釈するのはプラグインだけ、という原則を UI 側にも通すため、**フォームの形もプラグインが自己申告する**。ikasbox の登録 UI は型名から `[]param.Field` を JSON で受け取って入力欄を組み立てるだけで、フィールドの意味を知らない。
+
+- 入口は `video.Spec(t string) []param.Field`。`Normalize` を通すので旧語彙でも引ける。**未知の型では `nil`** を返し、UI 側は生の JSON 入力へフォールバックする。
+- 各プラグインは `Spec() []param.Field` を持つ。`Field.Name` は自分の `Params` 構造体の json タグと**必ず一致させること**(ここがずれると UI が作った JSON をプラグインが読めない)。
+- `param.Field` の JSON キー(`name` / `type` / `label` / `required` / `default`)は UI が直接参照するため変更しない。`Default` は `omitempty`。
+
+`param.Type` の語彙は **`text` / `multiline` / `datetime` の3つだけ**で、**増やさない**。UI 側に対応するコンポーネントが無いとフォーム生成が壊れるため、新しい入力形式が必要になったら先に UI 側へコンポーネントを足す。
+
+| 型 | フィールド |
+|---|---|
+| `file` | `path`(text, 必須) |
+| `img` | `path`(text, 必須) |
+| `cd` | `target`(datetime, 任意)、`text`(text, 任意) |
+| `terminal` | `text`(multiline, 必須) |
+
 ## 新しい video プラグインの追加手順
 
 1. `video/<name>/` に `New(param string) (core.Video, error)` を実装(`Params` 構造体 + `parseParams` は既存プラグインの形を踏襲)。`core.Video` インターフェースは `Next/Wait/Set/Current/Source/Release`。
-2. `video/video.go` の `Get` の switch と `Types()` に型名を追加(必要なら `Normalize` に別名、`IsGenerative` に生成型判定も)。
+2. 同じパッケージに `Spec() []param.Field` を実装(`Field.Name` は `Params` の json タグと一致させる)。
+3. `video/video.go` の `Get` / `Spec` の switch と `Types()` に型名を追加(必要なら `Normalize` に別名、`IsGenerative` に生成型判定も)。
 3. これだけで ikasbox の `content register` と server の再生が両方使えるようになる(中間層の変更は不要 — それがこの設計の眼目)。
 
 ## WIP(ビルド対象外のスケッチ)

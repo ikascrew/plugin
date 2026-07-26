@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ikascrew/core"
+	"github.com/ikascrew/plugin/video/param"
 
 	"gocv.io/x/gocv"
 )
@@ -25,6 +26,19 @@ type File struct {
 // Params は JSON param の形。解釈はこのプラグインだけが行う
 type Params struct {
 	Path string `json:"path"`
+}
+
+// Spec は登録 UI に渡す入力フォーム定義を返す。
+// Name は Params の json タグと一致させること
+func Spec() []param.Field {
+	return []param.Field{
+		{
+			Name:     "path",
+			Type:     param.Text,
+			Label:    "動画ファイルパス",
+			Required: true,
+		},
+	}
 }
 
 func parseParams(param string) Params {

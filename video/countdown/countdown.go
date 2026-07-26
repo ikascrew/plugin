@@ -10,6 +10,7 @@ import (
 
 	"github.com/ikascrew/core"
 	"github.com/ikascrew/plugin/video/output"
+	"github.com/ikascrew/plugin/video/param"
 
 	"gocv.io/x/gocv"
 )
@@ -34,6 +35,24 @@ type Countdown struct {
 type Params struct {
 	Target string `json:"target"`
 	Text   string `json:"text"`
+}
+
+// Spec は登録 UI に渡す入力フォーム定義を返す。
+// Name は Params の json タグと一致させること。
+// target は省略可(未指定なら過去日時扱いで即終了表示になる)
+func Spec() []param.Field {
+	return []param.Field{
+		{
+			Name:  "target",
+			Type:  param.DateTime,
+			Label: "カウント終了日時",
+		},
+		{
+			Name:  "text",
+			Type:  param.Text,
+			Label: "終了後に表示する文字列",
+		},
+	}
 }
 
 func parseParams(param string) Params {

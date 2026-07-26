@@ -8,6 +8,7 @@ import (
 
 	"github.com/ikascrew/core"
 	"github.com/ikascrew/plugin/video/output"
+	"github.com/ikascrew/plugin/video/param"
 
 	"gocv.io/x/gocv"
 )
@@ -26,6 +27,19 @@ type Terminal struct {
 // Params は JSON param の形。解釈はこのプラグインだけが行う
 type Params struct {
 	Text string `json:"text"`
+}
+
+// Spec は登録 UI に渡す入力フォーム定義を返す。
+// Name は Params の json タグと一致させること
+func Spec() []param.Field {
+	return []param.Field{
+		{
+			Name:     "text",
+			Type:     param.Multiline,
+			Label:    "表示テキスト",
+			Required: true,
+		},
+	}
 }
 
 func parseParams(param string) Params {
@@ -117,6 +131,12 @@ func (v *Terminal) Source() string {
 }
 
 func (v *Terminal) Release() error {
-	v.old.Close()
-	return nil
+	// Next を一度も呼ばずに Release されることがある(生成に失敗した
+	// コンテンツの後始末など)ため nil を許容する
+	if v.old == nil {
+		return nil
+	}
+	err := v.old.Close()
+	v.old = nil
+	return err
 }

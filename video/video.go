@@ -19,6 +19,7 @@ import (
 	cd "github.com/ikascrew/plugin/video/countdown"
 	file "github.com/ikascrew/plugin/video/file"
 	img "github.com/ikascrew/plugin/video/image"
+	"github.com/ikascrew/plugin/video/param"
 	terminal "github.com/ikascrew/plugin/video/terminal"
 
 	"golang.org/x/xerrors"
@@ -55,6 +56,24 @@ func Normalize(t string) string {
 		return "terminal"
 	}
 	return strings.ToLower(strings.TrimSpace(t))
+}
+
+// Spec は型名から JSON param の入力フォーム定義を返す。
+// ikasbox の登録 UI はこれを JSON で受け取ってフォームを組み立てる。
+// 未知の型では nil を返し、UI 側は生の JSON 入力へフォールバックする
+func Spec(t string) []param.Field {
+
+	switch Normalize(t) {
+	case "file":
+		return file.Spec()
+	case "img":
+		return img.Spec()
+	case "cd":
+		return cd.Spec()
+	case "terminal":
+		return terminal.Spec()
+	}
+	return nil
 }
 
 // RenderThumbnails は型名と JSON param からプラグインを生成して
