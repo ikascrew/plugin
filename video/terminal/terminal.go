@@ -6,6 +6,9 @@ import (
 	"image/color"
 	"strings"
 
+	"github.com/ikascrew/core"
+	"github.com/ikascrew/plugin/video/output"
+
 	"gocv.io/x/gocv"
 )
 
@@ -14,7 +17,7 @@ func init() {
 
 type Terminal struct {
 	lines []string
-	old   *gocv.Mat
+	old   *core.Frame
 
 	now int
 	max int
@@ -55,7 +58,7 @@ func New(param string) (*Terminal, error) {
 	return &f, nil
 }
 
-func (v *Terminal) Next() (*gocv.Mat, error) {
+func (v *Terminal) Next() (*core.Frame, error) {
 
 	left := 20
 	height := 30
@@ -64,7 +67,8 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 	//終了文字数
 	n := v.now / fps
 
-	newV := gocv.NewMatWithSize(720, 1280, gocv.MatTypeCV8UC3)
+	w, h := output.Size()
+	newV := core.NewFrame(w, h)
 
 	for idx, line := range v.lines {
 
@@ -78,7 +82,7 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 
 		n -= len(line)
 
-		gocv.PutText(&newV, buf, image.Pt(left, (idx+1)*height),
+		gocv.PutText(newV.Mat(), buf, image.Pt(left, (idx+1)*height),
 			gocv.FontHersheyComplexSmall, 1.0, color.RGBA{0, 255, 0, 0}, 2)
 
 		//calet
@@ -90,10 +94,10 @@ func (v *Terminal) Next() (*gocv.Mat, error) {
 	if v.old != nil {
 		v.old.Close()
 	}
-	v.old = &newV
+	v.old = newV
 
 	v.now++
-	return &newV, nil
+	return newV, nil
 }
 
 func (v *Terminal) Wait() float64 {

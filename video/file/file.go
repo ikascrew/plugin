@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ikascrew/core"
+
 	"gocv.io/x/gocv"
 )
 
@@ -15,7 +17,7 @@ type File struct {
 	fps    float64
 	frames int
 	name   string
-	source *gocv.Mat
+	source *core.Frame
 
 	cap *gocv.VideoCapture
 }
@@ -62,21 +64,21 @@ func New(param string) (*File, error) {
 	}
 
 	f.frames = int(f.cap.Get(gocv.VideoCaptureFrameCount))
-	v := gocv.NewMatWithSize(720, 1280, gocv.MatTypeCV8UC3)
 
 	f.fps = f.cap.Get(gocv.VideoCaptureFPS)
 
-	f.source = &v
+	// Read が実サイズに再確保するため初期サイズは仮でよい
+	f.source = core.NewFrame(1280, 720)
 	return &f, nil
 }
 
-func (v *File) Next() (*gocv.Mat, error) {
+func (v *File) Next() (*core.Frame, error) {
 
 	if v.cap == nil {
 		return nil, fmt.Errorf("Error:Caputure is nil")
 	}
 
-	v.cap.Read(v.source)
+	v.cap.Read(v.source.Mat())
 
 	pos := int(v.cap.Get(gocv.VideoCapturePosFrames))
 	if pos == v.frames {

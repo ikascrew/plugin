@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/ikascrew/core"
+
 	"gocv.io/x/gocv"
 )
 
@@ -13,7 +15,7 @@ func init() {
 
 type Image struct {
 	name string
-	src  *gocv.Mat
+	src  *core.Frame
 }
 
 // Params は JSON param の形。解釈はこのプラグインだけが行う
@@ -50,12 +52,12 @@ func New(param string) (*Image, error) {
 		return nil, fmt.Errorf("Error:LoadImage[%s]", img.name)
 	}
 
-	img.src = &wk
+	img.src = core.WrapMat(wk)
 
 	return &img, nil
 }
 
-func (v *Image) Next() (*gocv.Mat, error) {
+func (v *Image) Next() (*core.Frame, error) {
 	return v.src, nil
 }
 

@@ -11,6 +11,7 @@
 package video
 
 import (
+	"image"
 	"strings"
 
 	"github.com/ikascrew/core"
@@ -54,6 +55,39 @@ func Normalize(t string) string {
 		return "terminal"
 	}
 	return strings.ToLower(strings.TrimSpace(t))
+}
+
+// RenderThumbnails は型名と JSON param からプラグインを生成して
+// n フレームを標準の image.Image で描画する。param の検証
+// (プラグインの実生成)と Mat のライフサイクル管理をこちら側に
+// 閉じるため、ikasbox のサムネイル生成は gocv に依存せずに済む
+func RenderThumbnails(t string, param string, n int) ([]image.Image, error) {
+
+	v, err := Get(t, param)
+	if err != nil {
+		return nil, err
+	}
+	defer v.Release()
+
+	images := make([]image.Image, n)
+	for idx := range images {
+		m, err := v.Next()
+		if err != nil {
+			return nil, xerrors.Errorf("render frame(%d): %w", idx, err)
+		}
+		if m.Empty() {
+			return nil, xerrors.Errorf("rendered frame(%d) is empty", idx)
+		}
+		// Next は内部バッファを返すプラグインがあるため、
+		// ToImage(Go 側へのコピー)でスナップショットを取る
+		img, err := m.ToImage()
+		if err != nil {
+			return nil, xerrors.Errorf("frame to image(%d): %w", idx, err)
+		}
+		images[idx] = img
+	}
+
+	return images, nil
 }
 
 // Get は型名と JSON param から Video を生成する

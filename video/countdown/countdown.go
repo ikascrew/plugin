@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ikascrew/core"
+	"github.com/ikascrew/plugin/video/output"
+
 	"gocv.io/x/gocv"
 )
 
@@ -21,6 +24,8 @@ var jst = time.FixedZone("Asia/Tokyo", 9*60*60)
 type Countdown struct {
 	text   string
 	target int64
+
+	frame *core.Frame
 }
 
 // Params は JSON param の形。解釈はこのプラグインだけが行う。
@@ -71,9 +76,28 @@ func New(param string) (*Countdown, error) {
 	return &f, nil
 }
 
-func (v *Countdown) Next() (*gocv.Mat, error) {
+// canvas は描画先解像度のキャンバスを黒クリアして返す。
+// バッファは使い回し、解像度が変わった時だけ確保し直す
+func (v *Countdown) canvas() *core.Frame {
 
-	mat := gocv.NewMatWithSize(720, 1280, gocv.MatTypeCV8UC3)
+	w, h := output.Size()
+
+	if v.frame == nil || v.frame.Cols() != w || v.frame.Rows() != h {
+		if v.frame != nil {
+			v.frame.Close()
+		}
+		v.frame = core.NewFrame(w, h)
+	} else {
+		v.frame.Fill(0, 0, 0)
+	}
+
+	return v.frame
+}
+
+func (v *Countdown) Next() (*core.Frame, error) {
+
+	frame := v.canvas()
+	mat := frame.Mat()
 
 	now := time.Now().In(jst)
 	d := v.target - now.Unix()
@@ -88,24 +112,24 @@ func (v *Countdown) Next() (*gocv.Mat, error) {
 
 		left := 500 - (len(buf) * 100)
 
-		gocv.PutText(&mat, buf, image.Pt(left, 400),
+		gocv.PutText(mat, buf, image.Pt(left, 400),
 			gocv.FontHersheyComplexSmall, 16.0, color.RGBA{255, 255, 255, 0}, 4)
 
 		if len(buf) <= 1 {
-			gocv.Circle(&mat, image.Pt(502, 295), 200, color.RGBA{255, 255, 255, 0}, 8)
+			gocv.Circle(mat, image.Pt(502, 295), 200, color.RGBA{255, 255, 255, 0}, 8)
 		}
 
 	} else if v.text != "" {
-		gocv.PutText(&mat, v.text, image.Pt(60, 400),
+		gocv.PutText(mat, v.text, image.Pt(60, 400),
 			gocv.FontHersheyComplexSmall, 7.4, color.RGBA{255, 255, 255, 0}, 4)
 	} else {
-		gocv.PutText(&mat, "Happy", image.Pt(180, 200),
+		gocv.PutText(mat, "Happy", image.Pt(180, 200),
 			gocv.FontHersheyComplexSmall, 9.0, color.RGBA{255, 255, 255, 0}, 4)
-		gocv.PutText(&mat, "New Year!", image.Pt(10, 450),
+		gocv.PutText(mat, "New Year!", image.Pt(10, 450),
 			gocv.FontHersheyComplexSmall, 7.4, color.RGBA{255, 255, 255, 0}, 4)
 	}
 
-	return &mat, nil
+	return frame, nil
 }
 
 func (v *Countdown) Wait() float64 {
@@ -125,5 +149,10 @@ func (v *Countdown) Source() string {
 }
 
 func (v *Countdown) Release() error {
+	if v.frame != nil {
+		err := v.frame.Close()
+		v.frame = nil
+		return err
+	}
 	return nil
 }
