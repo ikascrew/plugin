@@ -6,7 +6,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ikascrew VJ システムの映像プラグイン集。コンテンツの「型」と「JSON パラメータ」の**本家リポジトリ**であり、型語彙・param 形式のルールはすべてここで決まる。server / ikasbox は `video` レジストリ経由でこのリポジトリを使う(client は import しない — gocv 依存を持ち込まないため)。
 
-ビルドには OpenCV(gocv)が必要。テストは `video/terminal` に1ファイルのみ。
+ビルドには OpenCV(gocv)が必要。テストはルートと `video/` 配下の各プラグイン(`countdown` / `file` / `image` / `param` / `telop` / `terminal`)、`video/video_test.go` にあり、`go test ./...` で実行する。
 
 ## video レジストリ(video/video.go)— 型解決の唯一の入口
 
