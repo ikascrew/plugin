@@ -2,7 +2,7 @@
 //
 // ikasbox のコンテンツ登録 UI は、型名から得た []Field をそのまま JSON で
 // 受け取ってフォームを組み立てる。**param の中身を解釈するのは各プラグインの
-// New だけ**という原則(plugin/CLAUDE.md)を UI 側にも通すための仕組みで、
+// New だけ**という原則(plugin/AGENTS.md)を UI 側にも通すための仕組みで、
 // ikasbox は器を作るだけでフィールドの意味を知らない。
 //
 // 型名から Field を引く入口は video.Spec。未知の型では nil が返り、

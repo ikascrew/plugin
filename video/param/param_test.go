@@ -8,7 +8,7 @@ import (
 )
 
 // Type 定数が UI 側の語彙("text"/"multiline"/"datetime")と一致することを
-// 検証する。CLAUDE.md はこの3語彙を増やさない方針を明記しているため、
+// 検証する。AGENTS.md はこの3語彙を増やさない方針を明記しているため、
 // 値そのものが変わっていないかを固定する
 func TestTypeConstants(t *testing.T) {
 	cases := []struct {
